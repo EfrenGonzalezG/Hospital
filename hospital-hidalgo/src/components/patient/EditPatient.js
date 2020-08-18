@@ -1,29 +1,34 @@
 import React, { Component } from 'react';
 
 import { Col, Form, Button, Jumbotron, Container, Alert } from "react-bootstrap";
-import url from "../../constans";
+import url from "../../constans/url";
 
 class EditPatient extends Component {
     constructor(props) {
         super(props);
+        //Se obtiene el valor de id en la url
         const id = this.props.match.params.id;
         this.state = {
+            //Campos para mostrar mensajes de error o de exito
             alert_message: '',
             alert_type: '',
         };
+        /*Carga los datos del paciente en state
+        Falta gestionar que el usuario exista o no en la db
+        */
         fetch(url['patients'] + id).then( resolve => {
             return resolve.json();
         }).then(data => {
             this.setState({
                 alert_message: '',
                 alert_type: '',
-                //Form data
+                //Datos de los pacientes en la db
                 id: id,
                 first_name: data.first_name,
                 last_name: data.last_name,
                 file: data.file,
                 curp: data.curp,
-                birthdate: data.birthdate === null ? '' : data.birthdate.substring(0,10),
+                birthdate: data.birthdate === null ? '' : data.birthdate.substring(0,10), //Si el usuario tiene fecha de nacimiento, solo se carga una substring
                 sex: data.sex,
                 address: data.address,
                 floor: data.floor,
@@ -35,11 +40,16 @@ class EditPatient extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-  
+
+    //Cambia los valores de state según el campo que se modifique
     handleChange(event) {
         this.setState({[event.target.name]: event.target.value});
     }
-  
+
+    /*
+    Hace un PUT a la api para editar un usuario
+    Es necesario verificar el retorno de la api de la funcion PUT, en caso de error se puede modificar alert_message y alert_type
+    */
     handleSubmit(event) {
         fetch(url['patients'], {
             method: 'PUT',
@@ -49,12 +59,18 @@ class EditPatient extends Component {
             }
         });
         this.setState({
-            alert_message: "Usuario Agregado Exitosamente",
+            alert_message: "Paciente Editado Exitosamente",
             alert_type: "success",
         });
+        //Previene que se recarge la pagina al entrar a la función
         event.preventDefault();
     }
-  
+
+    /*
+    Formulario para crear pacientes
+    Se cargan por defecto los valores de state en cada campo, deben ser los valores dentro de la db
+    Existe un campo de alerta que puede mostrar diferentes mensajes según los resultados del post
+    */
     render() {
         return (
             <Jumbotron fluid>

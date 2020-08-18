@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 
 import { Col, Form, Button, Jumbotron, Container, Alert } from "react-bootstrap";
-import url from "../../constans";
+import url from "../../constans/url";
 
 class NewPatient extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            //Campos para mostrar mensajes de error o de exito
             alert_message: '',
             alert_type: '',
-            //Form data
+            //Datos de los pacientes en la db
             first_name: '',
             last_name: '',
             file: '',
@@ -25,10 +26,15 @@ class NewPatient extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
   
+    //Cambia los valores de state según el campo que se modifique
     handleChange(event) {
         this.setState({[event.target.name]: event.target.value});
     }
   
+    /*
+    Hace un POST a la api para crear un nuevo usuario
+    Es necesario verificar el retorno de la api de la funcion POST, en caso de error se puede modificar alert_message y alert_type
+    */
     handleSubmit(event) {
         fetch(url['patients'], {
             method: 'POST',
@@ -38,12 +44,18 @@ class NewPatient extends Component {
             }
         });
         this.setState({
-            alert_message: "Usuario Agregado Exitosamente",
+            alert_message: "Paciente Agregado Exitosamente",
             alert_type: "success",
         });
+        //Previene que se recarge la pagina al entrar a la función
         event.preventDefault();
     }
   
+    /*
+    Formulario para crear pacientes
+    Se cargan por defecto los valores de state en cada campo, al inicio son vacios
+    Existe un campo de alerta que puede mostrar diferentes mensajes según los resultados del post
+    */
     render() {
         return (
             <Jumbotron fluid>
